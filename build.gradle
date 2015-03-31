@@ -1,0 +1,129 @@
+// Import plugins
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+	}
+}
+
+// Apply plugins
+apply plugin: 'java' // Support for Java
+apply plugin: 'maven' // Maven integration
+apply plugin: 'license' // Automatic license headers
+apply plugin: 'eclipse' // Helper plugin for IDE
+apply plugin: 'idea' // Helper plugin for IDE
+
+// Extended project information.
+ext.projectName = 'SimpleMail'
+ext.packaging = 'jar'
+ext.author = 'Felix Schmidt'
+ext.authorUrl = 'https://github.com/boformer'
+ext.inceptionYear = '2015'
+
+// Set plugin version.
+version = '0.1.0'
+
+// Maven group
+group = 'com.github.boformer.testplugin'
+
+// Set compatibility
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+// Set Maven repositories to check for dependencies
+repositories {
+	maven {
+		name 'Sponge maven repo'
+		url 'http://repo.spongepowered.org/maven'
+	}
+	mavenCentral()
+}
+
+// Add a new dependency configuration
+configurations {
+	provided
+	compile.extendsFrom provided
+}
+
+// Add your own dependencies. 
+// You can also edit which version of the SpongeAPI is used by the plugin
+dependencies {
+	provided 'org.spongepowered:spongeapi:1.1-SNAPSHOT' // Assume availability of the Sponge API
+}
+
+// Configure license headers
+license {
+	ext.name = rootProject.projectName
+	ext.author = rootProject.author
+	ext.url = rootProject.authorUrl
+	ext.year = rootProject.inceptionYear
+	exclude "**/*.info"
+	exclude "**/*.html"
+	exclude "assets/**"
+	header new File(rootProject.getProjectDir(), "HEADER.txt")
+	sourceSets = project.sourceSets
+	ignoreFailures false
+	strictCheck true
+	mapping {
+		java = 'SLASHSTAR_STYLE'
+	}
+}
+
+// Make the jar task contain all dependencies except for the provided configuration in the final output
+jar {
+	dependsOn configurations.runtime
+	from {
+		(configurations.runtime - configurations.provided).collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
+	}
+}
+
+// Task to generate source jar
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = "sources"
+	from sourceSets.main.allSource
+}
+
+// Task to generate javadoc jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = "javadoc"
+	from javadoc.destinationDir
+}
+
+// Include LICENSE.txt in all jars
+processResources {
+	from new File(rootProject.getProjectDir(), "LICENSE.txt")
+}
+
+// Define compiled jar, sources jar and javadoc jar as Maven artifacts
+artifacts {
+	archives jar
+	archives sourcesJar
+	archives javadocJar
+}
+
+// Add custom jar tasks to build task
+build.dependsOn(sourcesJar)
+build.dependsOn(javadocJar)
+
+// Equivalent to mvn install for your latest artifacts
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			// mavenUrl has to be set in your {userfolder}/.gradle/gradle.properties file
+			// Example file content: 
+			// mavenUrl=file:///C://mvn-repo/
+			if (project.hasProperty("mavenUrl")) {
+				repository(url: mavenUrl)
+			}
+			pom {
+				groupId = project.group
+				artifactId = project.name
+				version = project.version
+			}
+		}
+	}
+}
