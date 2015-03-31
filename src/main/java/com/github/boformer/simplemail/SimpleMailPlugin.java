@@ -38,7 +38,7 @@ import org.spongepowered.api.util.event.Subscribe;
 import com.google.inject.Inject;
 
 @Plugin(id = "boformer.simplemail", name = "SimpleMail", version = "0.1.0")
-public class MailPlugin 
+public class SimpleMailPlugin 
 {
     // Injected by Sponge on server startup
     @Inject

@@ -38,9 +38,9 @@ import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 public class MailCommand extends SimpleDispatcher 
 // Class extends SimpleDispatcher which allows the registration of subcommands.
 {
-    private final MailPlugin plugin;
+    private final SimpleMailPlugin plugin;
     
-	public MailCommand(MailPlugin plugin) 
+	public MailCommand(SimpleMailPlugin plugin) 
 	{
 	    super(  // description
 	            "Send and receive mails", 
