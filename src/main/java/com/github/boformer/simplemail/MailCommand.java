@@ -26,7 +26,6 @@ package com.github.boformer.simplemail;
 
 import java.util.List;
 
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandSource;
@@ -81,13 +80,19 @@ public class MailCommand extends SimpleDispatcher
         public boolean call(CommandSource source, String arguments, List<String> parents) throws CommandException
         {
             // Get list of mails
-            List<Text> mails = plugin.getMails(source.getName());
+            List<String> mails = plugin.getMails(source.getName());
             
             source.sendMessage(Texts.of("--- Your Inbox ---"));
             
             // Display list of mails
             if(mails.isEmpty()) source.sendMessage(Texts.of("No mails in your inbox."));
-            else source.sendMessage(mails);
+            else
+            {
+            	for(String mail : mails) 
+            	{
+            		source.sendMessage(Texts.of(mail));
+            	}
+            }
             
             // TODO Add paging: /mail read <page>
             
@@ -127,10 +132,13 @@ public class MailCommand extends SimpleDispatcher
             
             // TODO check if the player name exists, else cancel.
             
-            // Send the mail
+            
             // Format: "sender: the message"
-            Text mail = Texts.of(source.getName(), ": ", mailContent);
+            String mail = source.getName() + ": " + mailContent;
+            
+            // Send the mail
             plugin.sendMail(recipient, mail);
+            
             source.sendMessage(Texts.of("Mail sent to " + recipient + "."));
             
             return true;
