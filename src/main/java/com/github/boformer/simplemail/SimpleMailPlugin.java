@@ -83,6 +83,9 @@ public class SimpleMailPlugin
 		
 		try
 		{
+			// Create the folder if it does not exist
+			if(!configDir.isDirectory()) configDir.mkdirs();
+			
 			// Create the file if it does not exist
 			if(!mailStorageFile.isFile()) mailStorageFile.createNewFile();
 			
