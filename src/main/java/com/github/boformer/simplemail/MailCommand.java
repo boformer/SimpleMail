@@ -61,7 +61,7 @@ public class MailCommand extends SimpleDispatcher
     /**
      * The read subcommand.
      */
-	private class ReadSubcommand extends AbstractCommand
+	private class ReadSubcommand extends SimpleCommandBase
 	// Class extends AbstractCommand, a helper class defined in a separate file
     {
         ReadSubcommand()
@@ -103,7 +103,7 @@ public class MailCommand extends SimpleDispatcher
     /**
      * The send subcommand.
      */
-    private class SendSubcommand extends AbstractCommand
+    private class SendSubcommand extends SimpleCommandBase
     // Class extends AbstractCommand, a helper class defined in a separate file
     {
         SendSubcommand()
@@ -150,7 +150,7 @@ public class MailCommand extends SimpleDispatcher
     /**
      * The clear subcommand.
      */
-    private class ClearSubcommand extends AbstractCommand
+    private class ClearSubcommand extends SimpleCommandBase
     // Class extends AbstractCommand, a helper class defined in a separate file
     {
         ClearSubcommand()
