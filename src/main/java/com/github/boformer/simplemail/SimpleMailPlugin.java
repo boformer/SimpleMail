@@ -29,17 +29,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.event.entity.player.PlayerJoinEvent;
 import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.config.ConfigDir;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.event.Order;
 import org.spongepowered.api.util.event.Subscribe;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 @Plugin(id = "SimpleMail", name = "SimpleMail", version = "0.1.0")
@@ -63,17 +70,14 @@ public class SimpleMailPlugin
     // The in-memory version of the mail storage file
     private CommentedConfigurationNode mailStorageConfig;
     
-    
-	// TODO notify players about new mails
-
-    
+   
 	/**
 	 * Called on server startup.
 	 * 
 	 * @param event The server startup event
 	 */
 	@Subscribe
-	private void onPreInitialization(PreInitializationEvent event)
+	public void onPreInitialization(PreInitializationEvent event)
 	{
 		// Create a custom configuration file for mail storage
 		// {server-root}/config/SimpleMail/mails.conf
@@ -105,8 +109,20 @@ public class SimpleMailPlugin
 		game.getCommandDispatcher().register(this, new MailCommand(this), "mail");
 
 	}
-    
-    
+	
+	/**
+	 * Called when a player logs in.
+	 * 
+	 * @param event The player join event
+	 */
+	@Subscribe(order = Order.POST)
+	public void onPlayerJoin(PlayerJoinEvent event)
+	{
+		// Inform player about new mails
+		sendMailNotification(event.getPlayer());
+	}
+	
+	
     /**
      * Sends the mail text to the recipient.
      * 
@@ -133,6 +149,14 @@ public class SimpleMailPlugin
         
         // Save the changed mail storage file
         saveMailStorageConfig();
+        
+        // Check if recipient is a logged in player
+        Optional<Player> optional = game.getServer().getPlayer(recipient);
+        if(optional.isPresent()) 
+        {
+        	// Send notification to recipient
+        	sendMailNotification(optional.get());
+        }
     }
     
     
@@ -169,9 +193,8 @@ public class SimpleMailPlugin
     }
     
     
-    
     /**
-     * Helper method: Saves the mail storage config file.
+     * Saves the mail storage config file.
      */
     private void saveMailStorageConfig() 
     {
@@ -185,5 +208,23 @@ public class SimpleMailPlugin
 			e.printStackTrace();
 		}
     }
+    
+    
+	/**
+	 * Sends a notification message to a player who has new mails.
+	 * 
+	 * @param player The player
+	 */
+	private void sendMailNotification(Player player) 
+	{
+		// Get mails for player
+		List<String> mails = getMails(player.getName());
+		
+		// No mails --> do nothing
+		if(mails.isEmpty()) return;
+		
+		// Inform player about new mails
+		player.sendMessage(Texts.of("You got ", mails.size(), " new mail(s)! Read with /mail read"));
+	}
     
 }
