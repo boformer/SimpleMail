@@ -224,7 +224,7 @@ public class SimpleMailPlugin
 		if(mails.isEmpty()) return;
 		
 		// Inform player about new mails
-		player.sendMessage(Texts.of("You got ", mails.size(), " new mail(s)! Read with /mail read"));
+		player.sendMessage(Texts.of("You got new mails! Read with /mail read"));
 	}
     
 }
