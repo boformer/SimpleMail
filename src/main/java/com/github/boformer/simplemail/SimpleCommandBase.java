@@ -53,7 +53,8 @@ public abstract class SimpleCommandBase implements CommandCallable
     @Override
     public boolean testPermission(CommandSource source)
     {
-        return source.hasPermission(this.permission);
+        // return source.hasPermission(this.permission);
+    	return true;//TODO ignore permissions until there are good permission plugins for Sponge
     }
 
     @Override

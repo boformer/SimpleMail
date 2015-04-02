@@ -58,6 +58,12 @@ public class MailCommand extends SimpleDispatcher
 	    this.register(new ClearSubcommand(), "clear", "delete");
 	}
 	
+	@Override
+	public boolean testPermission(CommandSource source) 
+	{
+		return true; //TODO right now there is a bug in SpongeAPI (https://github.com/SpongePowered/SpongeAPI/pull/533) that makes this necessary!
+	}
+	
     /**
      * The read subcommand.
      */
@@ -79,7 +85,7 @@ public class MailCommand extends SimpleDispatcher
         @Override
         public boolean call(CommandSource source, String arguments, List<String> parents) throws CommandException
         {
-            // Get list of mails
+            // Get list of mails for user
             List<String> mails = plugin.getMails(source.getName());
             
             source.sendMessage(Texts.of("--- Your Inbox ---"));
