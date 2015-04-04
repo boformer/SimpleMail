@@ -39,36 +39,36 @@ public class MailCommand extends SimpleDispatcher
 {
     private final SimpleMailPlugin plugin;
     
-	public MailCommand(SimpleMailPlugin plugin) 
-	{
-	    super(  // description
-	            "Send and receive mails", 
-	            // help
-	            Texts.of("Send and receive server mails.\n" 
-	                    + "Mails will only be visible to players on this server "
-	                    + "and will not persist when the server restarts!"));
-	    
-	    // Save plugin instance (needed for mail methods)
-	    this.plugin = plugin;
-	    
-	    // Register the subcommands
-	    // /mail read,  /mail send <player> <msg>,  /mail clear
-	    this.register(new ReadSubcommand(), "read", "inbox");
-	    this.register(new SendSubcommand(), "send", "write");
-	    this.register(new ClearSubcommand(), "clear", "delete");
-	}
-	
-	@Override
-	public boolean testPermission(CommandSource source) 
-	{
-		return true; //TODO right now there is a bug in SpongeAPI (https://github.com/SpongePowered/SpongeAPI/pull/533) that makes this necessary!
-	}
-	
+    public MailCommand(SimpleMailPlugin plugin) 
+    {
+        super(  // description
+                "Send and receive mails", 
+                // help
+                Texts.of("Send and receive server mails.\n" 
+                        + "Mails will only be visible to players on this server "
+                        + "and will not persist when the server restarts!"));
+        
+        // Save plugin instance (needed for mail methods)
+        this.plugin = plugin;
+        
+        // Register the subcommands
+        // /mail read,  /mail send <player> <msg>,  /mail clear
+        this.register(new ReadSubcommand(), "read", "inbox");
+        this.register(new SendSubcommand(), "send", "write");
+        this.register(new ClearSubcommand(), "clear", "delete");
+    }
+    
+    @Override
+    public boolean testPermission(CommandSource source) 
+    {
+        return true; //TODO right now there is a bug in SpongeAPI (https://github.com/SpongePowered/SpongeAPI/pull/533) that makes this necessary!
+    }
+    
     /**
      * The read subcommand.
      */
-	private class ReadSubcommand extends SimpleCommandBase
-	// Class extends AbstractCommand, a helper class defined in a separate file
+    private class ReadSubcommand extends SimpleCommandBase
+    // Class extends AbstractCommand, a helper class defined in a separate file
     {
         ReadSubcommand()
         {
@@ -94,10 +94,10 @@ public class MailCommand extends SimpleDispatcher
             if(mails.isEmpty()) source.sendMessage(Texts.of("No mails in your inbox."));
             else
             {
-            	for(String mail : mails) 
-            	{
-            		source.sendMessage(Texts.of(mail));
-            	}
+                for(String mail : mails) 
+                {
+                    source.sendMessage(Texts.of(mail));
+                }
             }
             
             // TODO Add paging: /mail read <page>
@@ -105,7 +105,7 @@ public class MailCommand extends SimpleDispatcher
             return true;
         }
     }
-	
+    
     /**
      * The send subcommand.
      */

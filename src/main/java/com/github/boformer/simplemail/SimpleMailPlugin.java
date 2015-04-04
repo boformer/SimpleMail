@@ -71,74 +71,74 @@ public class SimpleMailPlugin
     private CommentedConfigurationNode mailStorageConfig;
     
    
-	/**
-	 * Called on server startup.
-	 * 
-	 * @param event The server startup event
-	 */
-	@Subscribe
-	public void onPreInitialization(PreInitializationEvent event)
-	{
-		// Create a custom configuration file for mail storage
-		// {server-root}/config/SimpleMail/mails.conf
-		File mailStorageFile = new File(configDir, "mails.conf");
-		
-		this.mailStorageConfigLoader = HoconConfigurationLoader.builder().setFile(mailStorageFile).build();
-		
-		try
-		{
-			// Create the folder if it does not exist
-			if(!configDir.isDirectory()) configDir.mkdirs();
-			
-			// Create the file if it does not exist
-			if(!mailStorageFile.isFile()) mailStorageFile.createNewFile();
-			
-			// Load the stored mails
-			mailStorageConfig = mailStorageConfigLoader.load();
-		}
-		catch (IOException e)
-		{
-			logger.error("Unable to create or load mail storage file!");
-			e.printStackTrace();
-			
-			// Cancel plugin startup
-			return;
-		}
-		
-		// Register the mail command
-		game.getCommandDispatcher().register(this, new MailCommand(this), "mail");
+    /**
+     * Called on server startup.
+     * 
+     * @param event The server startup event
+     */
+    @Subscribe
+    public void onPreInitialization(PreInitializationEvent event)
+    {
+        // Create a custom configuration file for mail storage
+        // {server-root}/config/SimpleMail/mails.conf
+        File mailStorageFile = new File(configDir, "mails.conf");
+        
+        this.mailStorageConfigLoader = HoconConfigurationLoader.builder().setFile(mailStorageFile).build();
+        
+        try
+        {
+            // Create the folder if it does not exist
+            if(!configDir.isDirectory()) configDir.mkdirs();
+            
+            // Create the file if it does not exist
+            if(!mailStorageFile.isFile()) mailStorageFile.createNewFile();
+            
+            // Load the stored mails
+            mailStorageConfig = mailStorageConfigLoader.load();
+        }
+        catch (IOException e)
+        {
+            logger.error("Unable to create or load mail storage file!");
+            e.printStackTrace();
+            
+            // Cancel plugin startup
+            return;
+        }
+        
+        // Register the mail command
+        game.getCommandDispatcher().register(this, new MailCommand(this), "mail");
 
-	}
-	
-	/**
-	 * Called when a player logs in.
-	 * 
-	 * @param event The player join event
-	 */
-	@Subscribe(order = Order.POST)
-	public void onPlayerJoin(PlayerJoinEvent event)
-	{
-		// Inform player about new mails
-		sendMailNotification(event.getPlayer());
-	}
-	
-	
+    }
+    
+    /**
+     * Called when a player logs in.
+     * 
+     * @param event The player join event
+     */
+    @Subscribe(order = Order.POST)
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        // Inform player about new mails
+        sendMailNotification(event.getPlayer());
+    }
+    
+    
     /**
      * Sends the mail text to the recipient.
      * 
      * @param recipient The recipient name
      * @param mail The mail text
      */
-	public void sendMail(String recipient, String mail) 
+    public void sendMail(String recipient, String mail) 
     {
-    	// Config section where the mails of the recipient are saved
-		CommentedConfigurationNode recipientNode = this.mailStorageConfig.getNode(recipient.toLowerCase());
-		
-		// Get the list of mails for this player from the storage
-    	@SuppressWarnings("unchecked")
-		List<String> mails = (List<String>) recipientNode.getValue();
+        // Config section where the mails of the recipient are saved
+        CommentedConfigurationNode recipientNode = this.mailStorageConfig.getNode(recipient.toLowerCase());
         
-    	// No mails found?
+        // Get the list of mails for this player from the storage
+        @SuppressWarnings("unchecked")
+        List<String> mails = (List<String>) recipientNode.getValue();
+        
+        // No mails found?
         if(mails == null) mails = new ArrayList<>();
         
         // Add the new mail to the list of mails
@@ -154,8 +154,8 @@ public class SimpleMailPlugin
         Optional<Player> optional = game.getServer().getPlayer(recipient);
         if(optional.isPresent()) 
         {
-        	// Send notification to recipient
-        	sendMailNotification(optional.get());
+            // Send notification to recipient
+            sendMailNotification(optional.get());
         }
     }
     
@@ -168,11 +168,11 @@ public class SimpleMailPlugin
      */
     public List<String> getMails(String recipient) 
     {
-    	// Get the list of mails for this player from the storage
-    	@SuppressWarnings("unchecked")
-		List<String> mails = (List<String>) this.mailStorageConfig.getNode(recipient.toLowerCase()).getValue();
+        // Get the list of mails for this player from the storage
+        @SuppressWarnings("unchecked")
+        List<String> mails = (List<String>) this.mailStorageConfig.getNode(recipient.toLowerCase()).getValue();
         
-    	// Return list of mails or empty list if no mails found
+        // Return list of mails or empty list if no mails found
         if(mails == null) return Collections.emptyList();
         else return Collections.unmodifiableList(mails);
     }
@@ -185,11 +185,11 @@ public class SimpleMailPlugin
      */
     public void clearMails(String recipient) 
     {
-    	// Remove config section where the mails of the recipient are saved
-    	this.mailStorageConfig.removeChild(recipient.toLowerCase());
-    	
-    	// Save the changed mail storage file
-    	saveMailStorageConfig();
+        // Remove config section where the mails of the recipient are saved
+        this.mailStorageConfig.removeChild(recipient.toLowerCase());
+        
+        // Save the changed mail storage file
+        saveMailStorageConfig();
     }
     
     
@@ -199,32 +199,32 @@ public class SimpleMailPlugin
     private void saveMailStorageConfig() 
     {
         try
-		{
-        	this.mailStorageConfigLoader.save(this.mailStorageConfig);
-		}
-		catch (IOException e)
-		{
-			logger.error("Unable to save mail storage file!");
-			e.printStackTrace();
-		}
+        {
+            this.mailStorageConfigLoader.save(this.mailStorageConfig);
+        }
+        catch (IOException e)
+        {
+            logger.error("Unable to save mail storage file!");
+            e.printStackTrace();
+        }
     }
     
     
-	/**
-	 * Sends a notification message to a player who has new mails.
-	 * 
-	 * @param player The player
-	 */
-	private void sendMailNotification(Player player) 
-	{
-		// Get mails for player
-		List<String> mails = getMails(player.getName());
-		
-		// No mails --> do nothing
-		if(mails.isEmpty()) return;
-		
-		// Inform player about new mails
-		player.sendMessage(Texts.of("You got new mails! Read with /mail read"));
-	}
+    /**
+     * Sends a notification message to a player who has new mails.
+     * 
+     * @param player The player
+     */
+    private void sendMailNotification(Player player) 
+    {
+        // Get mails for player
+        List<String> mails = getMails(player.getName());
+        
+        // No mails --> do nothing
+        if(mails.isEmpty()) return;
+        
+        // Inform player about new mails
+        player.sendMessage(Texts.of("You got new mails! Read with /mail read"));
+    }
     
 }
