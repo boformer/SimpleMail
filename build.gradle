@@ -49,7 +49,7 @@ configurations {
 // Add your own dependencies. 
 // You can also edit which version of the SpongeAPI is used by the plugin
 dependencies {
-	provided 'org.spongepowered:spongeapi:1.1-SNAPSHOT' // Assume availability of the Sponge API
+	provided 'org.spongepowered:spongeapi:2.0' // Assume availability of the Sponge API
 }
 
 // Configure license headers
