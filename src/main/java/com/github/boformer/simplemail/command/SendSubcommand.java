@@ -23,7 +23,7 @@ public class SendSubcommand implements CommandExecutor {
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args)
 			throws CommandException {
-		String recipient = (String) args.getOne("recipient").orNull();
+		String recipient = (String) args.getOne("player").orNull();
 		String mailContent = (String) args.getOne("msg").orNull();
 
 		// If there is no message, return that command was not successful
