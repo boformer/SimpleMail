@@ -14,33 +14,33 @@ import com.github.boformer.simplemail.SimpleMailPlugin;
  */
 public class SendSubcommand implements CommandExecutor {
 
-	private SimpleMailPlugin plugin;
+    private SimpleMailPlugin plugin;
 
-	public SendSubcommand(SimpleMailPlugin plugin) {
-		this.plugin = plugin;
-	}
+    public SendSubcommand(SimpleMailPlugin plugin) {
+        this.plugin = plugin;
+    }
 
-	@Override
-	public CommandResult execute(CommandSource src, CommandContext args)
-			throws CommandException {
-		String recipient = (String) args.getOne("player").orNull();
-		String mailContent = (String) args.getOne("msg").orNull();
+    @Override
+    public CommandResult execute(CommandSource src, CommandContext args)
+            throws CommandException {
+        String recipient = (String) args.getOne("player").orNull();
+        String mailContent = (String) args.getOne("msg").orNull();
 
-		// If there is no message, return that command was not successful
-		if (mailContent == null || mailContent == "") {
-			return CommandResult.empty();
-		}
+        // If there is no message, return that command was not successful
+        if (mailContent == null || mailContent == "") {
+            return CommandResult.empty();
+        }
 
-		// TODO check if the player name exists, else cancel.
+        // TODO check if the player name exists, else cancel.
 
-		// Format: "sender: the message"
-		String mail = src.getName() + ": " + mailContent;
+        // Format: "sender: the message"
+        String mail = src.getName() + ": " + mailContent;
 
-		// Send the mail
-		this.plugin.sendMail(recipient, mail);
+        // Send the mail
+        this.plugin.sendMail(recipient, mail);
 
-		src.sendMessage(Texts.of("Mail sent to " + recipient + "."));
+        src.sendMessage(Texts.of("Mail sent to " + recipient + "."));
 
-		return CommandResult.success();
-	}
+        return CommandResult.success();
+    }
 }

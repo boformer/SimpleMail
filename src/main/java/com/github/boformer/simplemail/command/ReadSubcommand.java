@@ -14,33 +14,33 @@ import com.github.boformer.simplemail.SimpleMailPlugin;
  * The read subcommand.
  */
 public class ReadSubcommand implements CommandExecutor {
-	
+
     private SimpleMailPlugin plugin;
 
-	public ReadSubcommand(SimpleMailPlugin plugin) {
-		this.plugin = plugin;
-	}
+    public ReadSubcommand(SimpleMailPlugin plugin) {
+        this.plugin = plugin;
+    }
 
-	@Override
-	public CommandResult execute(CommandSource src, CommandContext args) {
-		// Get list of mails for user
-		List<String> mails = this.plugin.getMails(src.getName());
+    @Override
+    public CommandResult execute(CommandSource src, CommandContext args) {
+        // Get list of mails for user
+        List<String> mails = this.plugin.getMails(src.getName());
 
-		src.sendMessage(Texts.of("--- Your Inbox ---"));
+        src.sendMessage(Texts.of("--- Your Inbox ---"));
 
-		// Display list of mails
-		if (mails.isEmpty()) {
-			src.sendMessage(Texts.of("No mails in your inbox."));
-		} else {
-			for (String mail : mails) {
-				src.sendMessage(Texts.of(mail));
-			}
-		}
+        // Display list of mails
+        if (mails.isEmpty()) {
+            src.sendMessage(Texts.of("No mails in your inbox."));
+        } else {
+            for (String mail : mails) {
+                src.sendMessage(Texts.of(mail));
+            }
+        }
 
-		// TODO Add paging: /mail read <page>
+        // TODO Add paging: /mail read <page>
 
-		// returns the number of mails in the inbox.
-		return CommandResult.builder().queryResult(mails.size()).build();
-	}
+        // returns the number of mails in the inbox.
+        return CommandResult.builder().queryResult(mails.size()).build();
+    }
 
 }

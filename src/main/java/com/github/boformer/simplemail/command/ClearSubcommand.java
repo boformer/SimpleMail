@@ -14,20 +14,20 @@ import com.github.boformer.simplemail.SimpleMailPlugin;
  */
 public class ClearSubcommand implements CommandExecutor {
 
-	private SimpleMailPlugin plugin;
+    private SimpleMailPlugin plugin;
 
-	public ClearSubcommand(SimpleMailPlugin plugin) {
-		this.plugin = plugin;
-	}
+    public ClearSubcommand(SimpleMailPlugin plugin) {
+        this.plugin = plugin;
+    }
 
-	@Override
-	public CommandResult execute(CommandSource src, CommandContext args)
-			throws CommandException {
-		// Clear inbox
-		this.plugin.clearMails(src.getName());
-		src.sendMessage(Texts.of("Inbox cleared!"));
+    @Override
+    public CommandResult execute(CommandSource src, CommandContext args)
+            throws CommandException {
+        // Clear inbox
+        this.plugin.clearMails(src.getName());
+        src.sendMessage(Texts.of("Inbox cleared!"));
 
-		return CommandResult.success();
-	}
+        return CommandResult.success();
+    }
 
 }
