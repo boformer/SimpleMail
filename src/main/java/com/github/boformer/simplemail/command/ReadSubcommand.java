@@ -26,13 +26,15 @@ package com.github.boformer.simplemail.command;
 
 import java.util.List;
 
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
+import com.github.boformer.simplemail.SimpleMailPlugin;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 
 import com.github.boformer.simplemail.SimpleMailPlugin;
+import org.spongepowered.api.text.Text;
 
 /**
  * The read subcommand.
@@ -46,18 +48,18 @@ public class ReadSubcommand implements CommandExecutor {
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) {
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         // Get list of mails for user
         List<String> mails = this.plugin.getMails(src.getName());
 
-        src.sendMessage(Texts.of("--- Your Inbox ---"));
+        src.sendMessage(Text.of("--- Your Inbox ---"));
 
         // Display list of mails
         if (mails.isEmpty()) {
-            src.sendMessage(Texts.of("No mails in your inbox."));
+            src.sendMessage(Text.of("No mails in your inbox."));
         } else {
             for (String mail : mails) {
-                src.sendMessage(Texts.of(mail));
+                src.sendMessage(Text.of(mail));
             }
         }
 

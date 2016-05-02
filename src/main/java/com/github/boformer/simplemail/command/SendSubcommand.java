@@ -24,14 +24,15 @@
  */
 package com.github.boformer.simplemail.command;
 
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
+import com.github.boformer.simplemail.SimpleMailPlugin;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 
 import com.github.boformer.simplemail.SimpleMailPlugin;
+import org.spongepowered.api.text.Text;
 
 /**
  * The send subcommand.
@@ -45,13 +46,12 @@ public class SendSubcommand implements CommandExecutor {
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args)
-            throws CommandException {
-        String recipient = (String) args.getOne("player").orNull();
-        String mailContent = (String) args.getOne("msg").orNull();
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        String recipient = (String) args.getOne("player").orElse(null);
+        String mailContent = (String) args.getOne("msg").orElse(null);
 
         // If there is no message, return that command was not successful
-        if (mailContent == null || mailContent == "") {
+        if (mailContent == null || mailContent.equals("")) {
             return CommandResult.empty();
         }
 
@@ -63,7 +63,7 @@ public class SendSubcommand implements CommandExecutor {
         // Send the mail
         this.plugin.sendMail(recipient, mail);
 
-        src.sendMessage(Texts.of("Mail sent to " + recipient + "."));
+        src.sendMessage(Text.of("Mail sent to " + recipient + "."));
 
         return CommandResult.success();
     }
