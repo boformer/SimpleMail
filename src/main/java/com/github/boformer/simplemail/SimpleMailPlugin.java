@@ -38,24 +38,23 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.entity.player.PlayerJoinEvent;
-import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.config.ConfigDir;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.args.GenericArguments;
-import org.spongepowered.api.util.command.spec.CommandSpec;
-
+import org.spongepowered.api.text.Text;
 import com.github.boformer.simplemail.command.ClearSubcommand;
 import com.github.boformer.simplemail.command.ReadSubcommand;
 import com.github.boformer.simplemail.command.SendSubcommand;
-import com.google.common.base.Optional;
 import com.google.inject.Inject;
+import java.util.Optional;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 
-@Plugin(id = "SimpleMail", name = "SimpleMail", version = "0.1.0")
+@Plugin(id = "simplemail", name = "SimpleMail", version = "0.1.0")
 public class SimpleMailPlugin {
 
     // Injected by Sponge on server startup
@@ -81,8 +80,8 @@ public class SimpleMailPlugin {
      * 
      * @param event The server startup event
      */
-    @Subscribe
-    public void onPreInitialization(PreInitializationEvent event) {
+    @Listener
+    public void onPreInitialization(GamePreInitializationEvent event) {
         // Create a custom configuration file for mail storage
         // {server-root}/config/SimpleMail/mails.conf
         File mailStorageFile = new File(this.configDir, "mails.conf");
@@ -118,41 +117,41 @@ public class SimpleMailPlugin {
 
         // 1a) /mail read
         subcommands.put(Arrays.asList("read", "inbox"), CommandSpec.builder()
-                .setPermission("simplemail.read")
-                .setDescription(Texts.of("Read your inbox"))
-                .setExtendedDescription(Texts.of("Displays the server mails you received."))
-                .setExecutor(new ReadSubcommand(this)) // <-- command logic is in there
+                .permission("simplemail.read")
+                .description(Text.of("Read your inbox"))
+                .extendedDescription(Text.of("Displays the server mails you received."))
+                .executor(new ReadSubcommand(this)) // <-- command logic is in there
                 .build());
 
         // 1b) /mail clear
         subcommands.put(Arrays.asList("clear", "delete"), CommandSpec.builder()
-                .setPermission("simplemail.clear")
-                .setDescription(Texts.of("Clear your inbox"))
-                .setExtendedDescription(Texts.of("This will delete all messages!"))
-                .setExecutor(new ClearSubcommand(this))
+                .permission("simplemail.clear")
+                .description(Text.of("Clear your inbox"))
+                .extendedDescription(Text.of("This will delete all messages!"))
+                .executor(new ClearSubcommand(this))
                 .build());
 
         // 1c) /mail send <player> <msg>
         subcommands.put(Arrays.asList("send", "write"), CommandSpec.builder()
-                .setPermission("simplemail.send")
-                .setDescription(Texts.of("Send a mail"))
-                .setExtendedDescription(Texts.of("Mails will only be visible to players on this server"))
-                .setArguments(GenericArguments.seq(
-                        GenericArguments.string(Texts.of("player")), // "string(...)" instead of "player(...)" to support offline players
-                        GenericArguments.remainingJoinedStrings(Texts.of("msg"))))
-                .setExecutor(new SendSubcommand(this))
+                .permission("simplemail.send")
+                .description(Text.of("Send a mail"))
+                .extendedDescription(Text.of("Mails will only be visible to players on this server"))
+                .arguments(GenericArguments.seq(
+                        GenericArguments.string(Text.of("player")), // "string(...)" instead of "player(...)" to support offline players
+                        GenericArguments.remainingJoinedStrings(Text.of("msg"))))
+                .executor(new SendSubcommand(this))
                 .build());
 
         // 2) main command
         CommandSpec mailCommand = CommandSpec
                 .builder()
-                .setDescription(Texts.of("Send and receive mails"))
-                .setExtendedDescription(Texts.of("Mails will only be visible to players on this server"))
-                .setChildren(subcommands) // register subcommands
+                .description(Text.of("Send and receive mails"))
+                .extendedDescription(Text.of("Mails will only be visible to players on this server"))
+                .children(subcommands) // register subcommands
                 .build();
 
         // Register the mail command
-        this.game.getCommandDispatcher().register(this, mailCommand, "mail");
+        this.game.getCommandManager().register(this, mailCommand, "mail");
 
     }
 
@@ -161,10 +160,10 @@ public class SimpleMailPlugin {
      * 
      * @param event The player join event
      */
-    @Subscribe(order = Order.POST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    @Listener(order = Order.POST)
+    public void onPlayerJoin(ClientConnectionEvent.Join event) {
         // Inform player about new mails
-        sendMailNotification(event.getPlayer());
+        sendMailNotification(event.getTargetEntity());
     }
 
     /**
@@ -264,7 +263,7 @@ public class SimpleMailPlugin {
         }
 
         // Inform player about new mails
-        player.sendMessage(Texts.of("You got new mails! Read with /mail read"));
+        player.sendMessage(Text.of("You got new mails! Read with /mail read"));
     }
 
 }
